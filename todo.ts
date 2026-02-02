@@ -58,7 +58,8 @@ const readTodos = (): void => {
     console.log("You have no todos!");
 
 } else {
-    console.log(`You have the following todos : ${todos.length} \n`);
+    console.log(`You have the following todos \n`);
+     console.log(`Total number of TODO: ${todos.length} \n`);
     todos.forEach((todo: Todo) => {
         console.log(`${todo.id} - ${todo.text} - ${todo.priority} - ${new Date(todo.date).toLocaleDateString()}`);
     });
@@ -67,11 +68,33 @@ const readTodos = (): void => {
 };
 //(U)pdate a todo
 
+const updateTodo = (): void => {
+    rl.question("Enter the ID of the todo to update: ", (input: string) => {
+        const id = parseInt(input);
+        const todo = todos.find((t) => t.id === id);
 
+        if (!todo) {
+            console.log("Todo not found!");
+            showMenu();
+            return;
+        }
+
+        rl.question("Enter new text (leave blank to keep current): ", (newText: string) => {
+            rl.question("Enter new priority (high/medium/low, leave blank to keep current): ", (newPriority: string) => {
+                if (newText.trim() !== "") todo.text = newText.trim();
+                if (["high", "medium", "low"].includes(newPriority.toLowerCase())) {
+                    todo.priority = newPriority.toLowerCase() as Priority;
+                }
+                console.log("Todo updated successfully!");
+                showMenu();
+            });
+        });
+    });
+};
 // (D) elete a todo
 
 const deleteTodo = () => {
-    rl.question("Which todo would you like to delete", (input: string)=>{
+    rl.question("Which todo would you like to delete :", (input: string)=>{
         const id: number = parseInt(input);
 
         const updatedTodos: Todo [] = todos.filter((todo: Todo) => todo.id !== id);
@@ -104,7 +127,9 @@ const handleCommand = (command: string) : void => {
         case "read": 
             readTodos();
         break;
-  
+        case "update":
+            updateTodo();
+        break;
         case "remove":
             deleteTodo();
         break;
@@ -130,7 +155,7 @@ const handleCommand = (command: string) : void => {
 const showMenu = (): void => {
 //   console.clear();
   console.log("\n=== Todo List App ===");
-  console.log("Commands: add, read, remove, clear todo, exit\n");
+  console.log("Commands: add, read, update, remove, clear todo, exit\n");
   process.stdout.write("> ");
   rl.question("", (command: string) => {
     handleCommand(command);
@@ -138,6 +163,6 @@ const showMenu = (): void => {
 };
 
 // Start the app
-console.log("\n=== Todo List App ===");
-console.log("Commands: add, list, remove, clear todo, exit\n");
-showMenu();
+// console.log("\n=== Todo List App ===");
+// console.log("Commands: add, list, remove, clear todo, exit\n");
+// showMenu();

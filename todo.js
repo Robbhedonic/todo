@@ -39,7 +39,8 @@ var readTodos = function () {
         console.log("You have no todos!");
     }
     else {
-        console.log("You have the following todos : ".concat(todos.length, " \n"));
+        console.log("You have the following todos \n");
+        console.log("Total number of TODO: ".concat(todos.length, " \n"));
         todos.forEach(function (todo) {
             console.log("".concat(todo.id, " - ").concat(todo.text, " - ").concat(todo.priority, " - ").concat(new Date(todo.date).toLocaleDateString()));
         });
@@ -47,9 +48,31 @@ var readTodos = function () {
     showMenu();
 };
 //(U)pdate a todo
+var updateTodo = function () {
+    rl.question("Enter the ID of the todo to update: ", function (input) {
+        var id = parseInt(input);
+        var todo = todos.find(function (t) { return t.id === id; });
+        if (!todo) {
+            console.log("Todo not found!");
+            showMenu();
+            return;
+        }
+        rl.question("Enter new text (leave blank to keep current): ", function (newText) {
+            rl.question("Enter new priority (high/medium/low, leave blank to keep current): ", function (newPriority) {
+                if (newText.trim() !== "")
+                    todo.text = newText.trim();
+                if (["high", "medium", "low"].includes(newPriority.toLowerCase())) {
+                    todo.priority = newPriority.toLowerCase();
+                }
+                console.log("Todo updated successfully!");
+                showMenu();
+            });
+        });
+    });
+};
 // (D) elete a todo
 var deleteTodo = function () {
-    rl.question("Which todo would you like to delete", function (input) {
+    rl.question("Which todo would you like to delete :", function (input) {
         var id = parseInt(input);
         var updatedTodos = todos.filter(function (todo) { return todo.id !== id; });
         if (updatedTodos.length === todos.length) {
@@ -77,6 +100,9 @@ var handleCommand = function (command) {
         case "read":
             readTodos();
             break;
+        case "update":
+            updateTodo();
+            break;
         case "remove":
             deleteTodo();
             break;
@@ -97,13 +123,13 @@ var handleCommand = function (command) {
 var showMenu = function () {
     //   console.clear();
     console.log("\n=== Todo List App ===");
-    console.log("Commands: add, read, remove, clear todo, exit\n");
+    console.log("Commands: add, read, update, remove, clear todo, exit\n");
     process.stdout.write("> ");
     rl.question("", function (command) {
         handleCommand(command);
     });
 };
 // Start the app
-console.log("\n=== Todo List App ===");
-console.log("Commands: add, list, remove, clear todo, exit\n");
+// console.log("\n=== Todo List App ===");
+// console.log("Commands: add, list, remove, clear todo, exit\n");
 showMenu();
