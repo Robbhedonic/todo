@@ -1,12 +1,16 @@
 // import readline from "readline";
 import * as readline from "readline";
 
+
+type Priority = "high" | "medium" | "low";
 // store todo in array
 type Todo = {
     id: number;
     text: string;
     date: number;
-}
+    priority: Priority;
+};
+
 let todos: Todo [] = [];
 // create readline interface
 
@@ -20,16 +24,30 @@ const addTodo = (): void => {
     rl.question("Enter Todo: ", (text: string) => {
         if(text.trim() === ""){
          console.log("Todo can not be empty!\n");
+    
         } else {
+
+            rl.question(
+                "Set priority (high/medium/low): ", (priorityInput: string) =>{
+                const priority = priorityInput.toLowerCase() as Priority;
+                if(!["high", "medium", "low"].includes(priority)){
+                    console.log("invalid priority! Defaulting to 'medium'");
+                }
+            
+
+
             const newTodo: Todo = {
                 id: Date.now(),
                 text: text.trim(),
                 date: Date.now(),
+                priority: ["high", "medium", "low"].includes(priority) ? priority : "medium",
             };
             todos.push(newTodo);
-            console.log(`Todo is added successfully!`)
-        }
-        showMenu();
+            console.log(`Todo is added successfully!`);
+              showMenu();
+            }
+        );
+    }
     });
 };
 
@@ -40,9 +58,9 @@ const readTodos = (): void => {
     console.log("You have no todos!");
 
 } else {
-    console.log("You have the following todos: \n");
+    console.log(`You have the following todos : ${todos.length} \n`);
     todos.forEach((todo: Todo) => {
-        console.log(`${todo.id} - ${todo.text} - ${new Date(todo.date).toLocaleDateString()}`);
+        console.log(`${todo.id} - ${todo.text} - ${todo.priority} - ${new Date(todo.date).toLocaleDateString()}`);
     });
     }
     showMenu();
@@ -67,6 +85,15 @@ const deleteTodo = () => {
         showMenu();
     });
 };
+
+
+// Clear all todos
+const clearTodos = (): void =>{
+    todos = [];
+    console.log("All todos cleared!");
+    showMenu();
+}
+
 // Handle command logic
 
 const handleCommand = (command: string) : void => {
@@ -81,7 +108,9 @@ const handleCommand = (command: string) : void => {
         case "remove":
             deleteTodo();
         break;
-
+        case "clear todo":
+            clearTodos();
+            break;
         case "exit":
             console.log("Goodbye!");
             rl.close();
@@ -101,7 +130,7 @@ const handleCommand = (command: string) : void => {
 const showMenu = (): void => {
 //   console.clear();
   console.log("\n=== Todo List App ===");
-  console.log("Commands: add, read, remove, exit\n");
+  console.log("Commands: add, read, remove, clear todo, exit\n");
   process.stdout.write("> ");
   rl.question("", (command: string) => {
     handleCommand(command);
@@ -110,5 +139,5 @@ const showMenu = (): void => {
 
 // Start the app
 console.log("\n=== Todo List App ===");
-console.log("Commands: add, list, remove, exit\n");
+console.log("Commands: add, list, remove, clear todo, exit\n");
 showMenu();

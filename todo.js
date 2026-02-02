@@ -15,16 +15,22 @@ var addTodo = function () {
             console.log("Todo can not be empty!\n");
         }
         else {
-            var newTodo = {
-                id: Date.now(),
-                text: text.trim(),
-                date: Date.now(),
-            };
-            todos.push(newTodo);
-            // const dateCreated = new Date(newTodo.date).toLocaleDateString();
-            console.log("Todo is added successfully!");
+            rl.question("Set priority (high/medium/low): ", function (priorityInput) {
+                var priority = priorityInput.toLowerCase();
+                if (!["high", "medium", "low"].includes(priority)) {
+                    console.log("invalid priority! Defaulting to 'medium'");
+                }
+                var newTodo = {
+                    id: Date.now(),
+                    text: text.trim(),
+                    date: Date.now(),
+                    priority: ["high", "medium", "low"].includes(priority) ? priority : "medium",
+                };
+                todos.push(newTodo);
+                console.log("Todo is added successfully!");
+                showMenu();
+            });
         }
-        showMenu();
     });
 };
 //(Read) all todos
@@ -33,9 +39,9 @@ var readTodos = function () {
         console.log("You have no todos!");
     }
     else {
-        console.log("You have the following todos: \n");
+        console.log("You have the following todos : ".concat(todos.length, " \n"));
         todos.forEach(function (todo) {
-            console.log("".concat(todo.id, " - ").concat(todo.text, " - ").concat(new Date(todo.date).toLocaleDateString()));
+            console.log("".concat(todo.id, " - ").concat(todo.text, " - ").concat(todo.priority, " - ").concat(new Date(todo.date).toLocaleDateString()));
         });
     }
     showMenu();
@@ -56,6 +62,12 @@ var deleteTodo = function () {
         showMenu();
     });
 };
+// Clear all todos
+var clearTodos = function () {
+    todos = [];
+    console.log("All todos cleared!");
+    showMenu();
+};
 // Handle command logic
 var handleCommand = function (command) {
     switch (command.trim().toLowerCase()) {
@@ -67,6 +79,9 @@ var handleCommand = function (command) {
             break;
         case "remove":
             deleteTodo();
+            break;
+        case "clear todo":
+            clearTodos();
             break;
         case "exit":
             console.log("Goodbye!");
@@ -82,7 +97,7 @@ var handleCommand = function (command) {
 var showMenu = function () {
     //   console.clear();
     console.log("\n=== Todo List App ===");
-    console.log("Commands: add, read, remove, exit\n");
+    console.log("Commands: add, read, remove, clear todo, exit\n");
     process.stdout.write("> ");
     rl.question("", function (command) {
         handleCommand(command);
@@ -90,5 +105,5 @@ var showMenu = function () {
 };
 // Start the app
 console.log("\n=== Todo List App ===");
-console.log("Commands: add, list, remove, exit\n");
+console.log("Commands: add, list, remove, clear todo, exit\n");
 showMenu();
