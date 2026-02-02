@@ -2,6 +2,9 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 // import readline from "readline";
 var readline = require("readline");
+var fs = require("fs");
+var path = require("path");
+var FILE_PATH = path.join(__dirname, "todos.json");
 var todos = [];
 // create readline interface
 var rl = readline.createInterface({
@@ -27,6 +30,7 @@ var addTodo = function () {
                     priority: ["high", "medium", "low"].includes(priority) ? priority : "medium",
                 };
                 todos.push(newTodo);
+                saveTodos();
                 console.log("Todo is added successfully!");
                 showMenu();
             });
@@ -65,6 +69,7 @@ var updateTodo = function () {
                     todo.priority = newPriority.toLowerCase();
                 }
                 console.log("Todo updated successfully!");
+                saveTodos();
                 showMenu();
             });
         });
@@ -81,6 +86,7 @@ var deleteTodo = function () {
         else {
             todos = updatedTodos;
             console.log("Todo removed successfully!");
+            saveTodos();
         }
         showMenu();
     });
@@ -88,6 +94,7 @@ var deleteTodo = function () {
 // Clear all todos
 var clearTodos = function () {
     todos = [];
+    saveTodos();
     console.log("All todos cleared!");
     showMenu();
 };
@@ -129,7 +136,16 @@ var showMenu = function () {
         handleCommand(command);
     });
 };
+var saveTodos = function () {
+    fs.writeFileSync(FILE_PATH, JSON.stringify(todos));
+};
+var loadTodos = function () {
+    if (fs.existsSync(FILE_PATH)) {
+        todos = JSON.parse(fs.readFileSync(FILE_PATH, "utf-8"));
+    }
+};
 // Start the app
 // console.log("\n=== Todo List App ===");
 // console.log("Commands: add, list, remove, clear todo, exit\n");
+loadTodos();
 showMenu();

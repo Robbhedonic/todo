@@ -1,5 +1,10 @@
 // import readline from "readline";
 import * as readline from "readline";
+import * as fs from "fs";
+
+import * as path from "path";
+
+const FILE_PATH = path.join(__dirname, "todos.json");
 
 
 type Priority = "high" | "medium" | "low";
@@ -43,6 +48,7 @@ const addTodo = (): void => {
                 priority: ["high", "medium", "low"].includes(priority) ? priority : "medium",
             };
             todos.push(newTodo);
+            saveTodos();
             console.log(`Todo is added successfully!`);
               showMenu();
             }
@@ -86,6 +92,7 @@ const updateTodo = (): void => {
                     todo.priority = newPriority.toLowerCase() as Priority;
                 }
                 console.log("Todo updated successfully!");
+                saveTodos();
                 showMenu();
             });
         });
@@ -104,6 +111,7 @@ const deleteTodo = () => {
         } else {
             todos = updatedTodos;
             console.log("Todo removed successfully!");
+            saveTodos();
         }
         showMenu();
     });
@@ -113,6 +121,7 @@ const deleteTodo = () => {
 // Clear all todos
 const clearTodos = (): void =>{
     todos = [];
+    saveTodos();
     console.log("All todos cleared!");
     showMenu();
 }
@@ -162,7 +171,21 @@ const showMenu = (): void => {
   });
 };
 
+
+const saveTodos = () => {
+    fs.writeFileSync(FILE_PATH, JSON.stringify(todos));
+};
+
+const loadTodos = () => {
+    if (fs.existsSync(FILE_PATH)) {
+        todos = JSON.parse(fs.readFileSync(FILE_PATH, "utf-8"));
+    }
+};
+
+
 // Start the app
 // console.log("\n=== Todo List App ===");
 // console.log("Commands: add, list, remove, clear todo, exit\n");
-// showMenu();
+
+loadTodos();
+showMenu();
